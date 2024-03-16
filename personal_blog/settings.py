@@ -69,7 +69,7 @@ TEMPLATES = [
 		"BACKEND": "django.template.backends.django.DjangoTemplates",
 		"DIRS": [BASE_DIR / 'templates']
 		,
-		"APP_DIRS": True,
+		"APP_DIRS": False,
 		"OPTIONS": {
 			"context_processors": [
 				"django.template.context_processors.debug",
@@ -77,8 +77,53 @@ TEMPLATES = [
 				"django.contrib.auth.context_processors.auth",
 				"django.contrib.messages.context_processors.messages",
 			],
+			'loaders': [
+				('django.template.loaders.cached.Loader', [
+					'django.template.loaders.filesystem.Loader',
+					'django.template.loaders.app_directories.Loader'
+					,
+				]),
+			]
 		},
 	},
+]
+
+LOGGING = {
+	'version': 1,
+	'filters': {
+		'require_debug_true': {
+			'()': 'django.utils.log.RequireDebugTrue',
+		}
+	},
+	'handlers': {
+		'console': {
+			'level': 'DEBUG',
+			'filters': ['require_debug_true'],
+			'class': 'logging.StreamHandler',
+		}
+	},
+	'loggers': {
+		'django.db.backends': {
+			'level': 'DEBUG',
+			'handlers': ['console'],
+		}
+	}
+}
+
+DEBUG_TOOLBAR_PANELS = [
+	'debug_toolbar.panels.history.HistoryPanel',
+	'debug_toolbar.panels.versions.VersionsPanel',
+	'debug_toolbar.panels.timer.TimerPanel',
+	'debug_toolbar.panels.settings.SettingsPanel',
+	'debug_toolbar.panels.headers.HeadersPanel',
+	'debug_toolbar.panels.request.RequestPanel',
+	'debug_toolbar.panels.sql.SQLPanel',
+	'debug_toolbar.panels.staticfiles.StaticFilesPanel',
+	'debug_toolbar.panels.templates.TemplatesPanel',
+	'debug_toolbar.panels.cache.CachePanel',
+	'debug_toolbar.panels.signals.SignalsPanel',
+	'debug_toolbar.panels.redirects.RedirectsPanel',
+	'debug_toolbar.panels.profiling.ProfilingPanel',
 ]
 
 WSGI_APPLICATION = "personal_blog.wsgi.application"

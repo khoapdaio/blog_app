@@ -3,28 +3,38 @@
 {% block title %}Danh sách{% endblock %}
 {% block content-post %}
     <div class="col-lg-8 col-md-12">
-        <form action="{% url 'danh-sach' %}">
+        <form class="my-1 mb-5" action="search" method="get">
             <div class="form-row d-flex align-items-end justify-content-end">
-                <div class="col-auto my-1 px-4 mb-3">
-                    <button type="submit" class="btn btn-outline-info rounded-circle">
-                        {% load bootstrap_icons %}{% bs_icon "search" %}</button>
-                </div>
-                <div class="col-sm-3 my-1">
-                    <label for="inputState">Danh mục</label>
-                    <select id="inputState" name="category" class="form-control  mb-2">
+                <div class="col-sm-3 me-2">
+                    <label for="categorySelect">Danh mục</label>
+                    <select id="categorySelect" name="category" class="form-control">
                         <option value="">Tất cả</option>
                         {% for element in categories %}
                             <option value="{{ element.id }}"
                                     {% if query == element.id %}
-                                    selected
+                                    selected="selected"
                                     {% endif %}>{{ element.name }}</option>
                         {% endfor %}
                     </select>
                 </div>
+                <div class="col-sm-3 me-2">
+                    <label for="nameInput">Tiêu đề</label>
+                    <input id="nameInput" class="form-control" name="title" type="text" alt="tiêu đề">
+                </div>
+                <div class="col-sm-3 me-2">
+                    <label for="timeInput">Thời gian</label>
+                    <input id="timeInput" class="form-control" name="date" type="date" alt="time">
+                </div>
+                <div class="col-auto ">
+                    <button type="submit" class="btn btn-outline-info">
+                       Tìm kiếm</button>
+                    <button type="reset" class="btn btn-outline-danger">
+                       Reset</button>
+                </div>
             </div>
         </form>
-         {% for element in posts.object_list %}
-        <div class="card-group">
+        {% for element in posts.object_list %}
+            <div class="card-group">
                 <div class="card mb-5 rounded-lg position-relative">
                     <div class="row g-0">
                         <div class="col-md-4">
@@ -51,8 +61,8 @@
                         </div>
                     </div>
                 </div>
-        </div>
-       {% endfor %}
+            </div>
+        {% endfor %}
         <nav aria-label="Pagination">
             <hr class="my-0">
             <ul class="pagination justify-content-center my-4">

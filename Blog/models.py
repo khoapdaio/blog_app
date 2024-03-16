@@ -69,4 +69,3 @@ class Comment(models.Model):
 	class Meta:
 		db_table = "comments"
 
-
