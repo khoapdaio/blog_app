@@ -12,7 +12,7 @@ def home(request):
 
 def danhSach(request):
 	posts = (
-		Post.objects.filter()
+		Post.objects.filter(published=True)
 		.values_list("id", "title", "photo", "meta_description", "publish_date", "author", named=True)
 	)
 	page_post = Paginator(posts, 5)
@@ -29,54 +29,32 @@ def search(request):
 	category_search = request.GET.get('category', None)
 	title_search = request.GET.get('title', None)
 	date_search = request.GET.get('date', None)
-
-	search_query = {
-		'category': category_search,
-		'title': title_search,
-		'date': date_search
-	}
-
 	page_number = int(request.GET.get('page', 1))
 
-	lookups = None
+	lookups = Q(published=True)
+
 	if category_search != '' and category_search is not None:
-		lookups = Q(category_id=category_search)
-
+		lookups = lookups | Q(category_id=category_search)
 	if title_search != '' and title_search is not None:
-		lookups = lookups | Q(title__contains=title_search) if lookups else Q(
-			title__icontains=title_search)
-
+		lookups = lookups | Q(title__contains=title_search)
 	if date_search != '' and date_search is not None:
-		lookups = lookups | Q(date_created__gte=date_search) if lookups else Q(
-			date_created__gte=date_search)
+		lookups = lookups | Q(date_created__gte=date_search)
 
-	if lookups is not None:
-		posts = (
-			Post.objects
-			.filter(
-				lookups
-			)
-			.values_list(
-				"id",
-				"title",
-				"photo",
-				"meta_description",
-				"publish_date",
-				"author",
-				named=True)
+	posts = (
+		Post.objects
+		.filter(
+			lookups
 		)
-	else:
-		posts = (
-			Post.objects.values_list(
-				"id",
-				"title",
-				"photo",
-				"meta_description",
-				"publish_date",
-				"author",
-				named=True
-			)
-		)
+		.values_list(
+			"id",
+			"title",
+			"photo",
+			"meta_description",
+			"publish_date",
+			"author",
+			named=True)
+	)
+
 	page_post = Paginator(posts, 10)
 
 	if type(page_number) is not int:
@@ -100,4 +78,16 @@ def chiTiet(request, id):
 
 
 def lienHe(request):
-	return render(request, 'contact.html', {})
+	context = {
+		'lienHe': Post.objects.get(pk=32)
+	}
+
+	return render(request, 'contact.html', context)
+
+
+def gioiThieu(request):
+	context = {
+		'gioiThieu': Post.objects.get(pk=33)
+	}
+
+	return render(request, 'about.html', context)
