@@ -7,7 +7,13 @@ from Blog.models import Category, Post
 
 # Create your views here.
 def home(request):
-	return render(request, 'home.html', {'categories': Category.objects.all()})
+	context = {
+		'categories': Category.objects.filter(active=True).all(),
+		'posts': Post.objects.filter(published=True)
+		.values_list("publish_date", named=True)
+	}
+
+	return render(request, 'home.html', context)
 
 
 def danhSach(request):
@@ -18,7 +24,7 @@ def danhSach(request):
 	page_post = Paginator(posts, 5)
 	posts = page_post.page(1)
 	context = {
-		'categories': Category.objects.all(),
+		'categories': Category.objects.filter(active=True).all(),
 		'posts': posts,
 	}
 
@@ -34,11 +40,11 @@ def search(request):
 	lookups = Q(published=True)
 
 	if category_search != '' and category_search is not None:
-		lookups = lookups | Q(category_id=category_search)
+		lookups = lookups & Q(category_id=category_search)
 	if title_search != '' and title_search is not None:
-		lookups = lookups | Q(title__contains=title_search)
+		lookups = lookups & Q(title__contains=title_search)
 	if date_search != '' and date_search is not None:
-		lookups = lookups | Q(date_created__gte=date_search)
+		lookups = lookups & Q(date_created__gte=date_search)
 
 	posts = (
 		Post.objects
@@ -65,20 +71,28 @@ def search(request):
 		posts = page_post.page(page_number)
 
 	context = {
-		'categories': Category.objects.all(),
+		'categories': Category.objects.filter(active=True).all(),
 		'posts': posts,
-		'query': category_search
+		'title_search': title_search,
+		'date_search': date_search,
+		'query': int(category_search) if (category_search is not None and category_search != '') else None
 	}
 
 	return render(request, "posts/danh-sach.html", context)
 
 
 def chiTiet(request, id):
-	return render(request, "posts/chi-tiet.html", {'post': Post.objects.get(pk=id)})
+	context = {
+		'categories': Category.objects.filter(active=True).all(),
+		'post': Post.objects.get(pk=id)
+	}
+
+	return render(request, "posts/chi-tiet.html", context)
 
 
 def lienHe(request):
 	context = {
+		'categories': Category.objects.filter(active=True).all(),
 		'lienHe': Post.objects.get(pk=32)
 	}
 
@@ -87,6 +101,7 @@ def lienHe(request):
 
 def gioiThieu(request):
 	context = {
+		'categories': Category.objects.filter(active=True).all(),
 		'gioiThieu': Post.objects.get(pk=33)
 	}
 
